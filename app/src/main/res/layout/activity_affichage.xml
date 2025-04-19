@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#08E91E63"
+    android:orientation="vertical"
+    tools:context=".Affichage">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="match_parent"
+        android:layout_height="182dp"
+        android:paddingTop="30dp"
+        app:srcCompat="@drawable/image_sans_fond3" />
+
+    <TextView
+        android:id="@+id/rvaffichage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:paddingBottom="20sp"
+        android:text="Affichage"
+        android:textColor="#E91E63"
+        android:textSize="70sp"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Rechercher un contact" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvaffiche"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
