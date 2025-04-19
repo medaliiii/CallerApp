@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#08E91E63"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="259dp"
+        android:paddingTop="30dp"
+        app:srcCompat="@drawable/image_sans_fond" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            style="@style/st_titre1"
+            android:text="Bienvenue"
+            android:textColor="#E91E63"
+            android:textSize="80sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:gravity="center_horizontal|left"
+            android:orientation="horizontal"
+            android:paddingLeft="15sp"
+            android:paddingBottom="10sp">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="90sp"
+                android:text="Nom :"
+                android:textAlignment="viewStart"
+                android:textColor="#3C325F"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/ed_nom_auth"
+                android:layout_width="238dp"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:hint="saisir votre nom"
+                android:inputType="text"
+                android:textAlignment="textStart" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:gravity="center_horizontal|left"
+            android:orientation="horizontal"
+            android:paddingLeft="15sp"
+            android:paddingBottom="10sp">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:paddingRight="20sp"
+                android:text="Mot de passe : "
+                android:textColor="#3C325F"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/ed_pw_auth"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:ems="10"
+                android:hint="saisir votre mot de passe "
+                android:inputType="numberPassword"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingTop="10sp"
+            android:paddingBottom="10sp">
+
+            <CheckBox
+                android:id="@+id/checkBoxauth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#3C325F"
+                android:duplicateParentState="false"
+                android:filterTouchesWhenObscured="false"
+                android:focusable="auto"
+                android:textAlignment="viewStart"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_rest_con"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Rester connecté"
+                android:textAlignment="viewStart"
+                android:textColor="#3C325F"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingTop="10sp"
+            android:paddingBottom="8sp">
+
+            <Button
+                android:id="@+id/btn_qtt_auth"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:insetRight="10dp"
+                android:text="Quitter"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_con_auth"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:insetLeft="10dp"
+                android:text="Se connecter"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="140sp"
+            android:paddingBottom="20sp">
+
+            <TextView
+                android:id="@+id/tvAdduser_auth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Créer un nouveau utilisateur"
+                android:textAlignment="center"
+                android:textColor="#E91E63"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
