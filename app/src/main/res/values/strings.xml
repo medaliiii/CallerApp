@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MyCallerApp</string>
+    <string-array name="country_codes">
+        <item>🇹🇳 +216</item> <!-- Tunisie -->
+        <item>🇫🇷 +33</item>  <!-- France -->
+        <item>🇺🇸 +1</item>   <!-- États-Unis -->
+        <item>🇬🇧 +44</item>  <!-- Royaume-Uni -->
+        <item>🇩🇪 +49</item>  <!-- Allemagne -->
+        <item>🇩🇿 +213</item> <!-- Algérie -->
+        <item>🇮🇳 +91</item>  <!-- Inde -->
+        <item>🇦🇺 +61</item>  <!-- Australie -->
+        <item>🇨🇴 +57</item> <!-- Colombie -->
+
+    </string-array>
+</resources>
