@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#08E91E63"
+    android:orientation="vertical"
+    android:paddingLeft="10sp"
+    android:paddingTop="30sp"
+    android:paddingRight="10sp">
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="match_parent"
+        android:layout_height="166dp"
+        app:srcCompat="@drawable/ajouter_un_ami" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="cursive"
+        android:text="Créer un compte"
+        android:textAlignment="center"
+        android:textColor="#E91E63"
+        android:textSize="60sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/ed_nom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nom"
+        android:inputType="text"
+        android:paddingLeft="20sp"
+        android:paddingRight="20sp"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/ed_motdepasse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mot de passe"
+        android:inputType="textPassword"
+        android:paddingLeft="20sp"
+        android:paddingRight="20sp"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/ed_numtel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Numéro de téléphone"
+        android:inputType="phone"
+        android:paddingLeft="20sp"
+        android:paddingRight="20sp"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingTop="10sp">
+
+        <Button
+            android:id="@+id/btn_creer_compte"
+            android:layout_width="219dp"
+            android:layout_height="58dp"
+            android:text="Créer un compte"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/con"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20sp"
+        android:paddingRight="10sp"
+        android:text="J'ai deja un compte existant"
+        android:textAlignment="textEnd"
+        android:textColor="#E91E63"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
