@@ -13,12 +13,18 @@ public class ContactHelper extends SQLiteOpenHelper {
     public static final String col_nom="nom";
     public static final String col_pseudo="pseudo";
     public static final String col_num="num";
+    public static final String col_avatar = "avatar_url";
 
-    String requete="create table "+table_contact+"("+col_id+" Integer Primary Key Autoincrement," +  col_nom+" Text not null,"+col_pseudo+" Text not null,"+col_num+" Integer)";
+    String requete = "create table " + table_contact + "("
+            + col_id + " Integer Primary Key Autoincrement,"
+            + col_nom + " Text not null,"
+            + col_pseudo + " Text not null,"
+            + col_num + " Text,"
+            + col_avatar + " Text)";
 
 
     public ContactHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+        super(context, name, factory, 3); // Passez à la version 3
     }
 
     @Override
