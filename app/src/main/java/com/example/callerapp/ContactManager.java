@@ -22,11 +22,13 @@ public class ContactManager {
         db = helper.getWritableDatabase();
     }
 
-    public long ajout(String nom, String pseudo, String num) {
+
+    public long ajout(String nom, String pseudo, String num, String avatarUrl) {
         ContentValues values = new ContentValues();
         values.put(ContactHelper.col_nom, nom);
         values.put(ContactHelper.col_pseudo, pseudo);
         values.put(ContactHelper.col_num, num);
+        values.put(ContactHelper.col_avatar, avatarUrl);
         return db.insert(ContactHelper.table_contact, null, values);
     }
 
@@ -34,7 +36,9 @@ public class ContactManager {
         ArrayList<Contact> listContacts = new ArrayList<>();
 
         Cursor cursor = db.query(ContactHelper.table_contact,
-                new String[]{ContactHelper.col_id, ContactHelper.col_nom, ContactHelper.col_pseudo, ContactHelper.col_num},
+                new String[]{ContactHelper.col_id, ContactHelper.col_nom,
+                        ContactHelper.col_pseudo, ContactHelper.col_num,
+                        ContactHelper.col_avatar},
                 null, null, null, null, ContactHelper.col_nom + " ASC");
 
         if (cursor.moveToFirst()) {
@@ -43,8 +47,9 @@ public class ContactManager {
                 String nom = cursor.getString(cursor.getColumnIndex(ContactHelper.col_nom));
                 String pseudo = cursor.getString(cursor.getColumnIndex(ContactHelper.col_pseudo));
                 String num = cursor.getString(cursor.getColumnIndex(ContactHelper.col_num));
+                String avatarUrl = cursor.getString(cursor.getColumnIndex(ContactHelper.col_avatar));
 
-                Contact contact = new Contact(id, nom, pseudo, num);
+                Contact contact = new Contact(id, nom, pseudo, num, avatarUrl);
                 listContacts.add(contact);
             } while (cursor.moveToNext());
         }
