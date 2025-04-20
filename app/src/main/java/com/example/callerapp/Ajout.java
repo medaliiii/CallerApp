@@ -189,7 +189,11 @@ public class Ajout extends AppCompatActivity {
             return;
         }
 
-        long result = manager.ajout(nom, pseudo, fullNumber);
+        // Générer l'URL de l'avatar
+        AvatarResponse avatar = new AvatarResponse(nom); // Utilisez le nom comme seed
+        String avatarUrl = avatar.getAvatarUrl();
+
+        long result = manager.ajout(nom, pseudo, fullNumber, avatarUrl);
 
         if (result != -1) {
             Toast.makeText(this, "Contact enregistré", Toast.LENGTH_SHORT).show();
@@ -198,6 +202,8 @@ public class Ajout extends AppCompatActivity {
             Toast.makeText(this, "Échec de l'enregistrement", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     private void clearFields() {
         runOnUiThread(() -> {
