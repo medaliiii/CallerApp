@@ -1,10 +1,10 @@
 package com.example.callerapp;
 
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,152 +17,207 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecyclerAdapter.MyViewHolder> {
-    Context con;
-    ArrayList<Contact> data;
-    ContactManager manager;
+    private Context context;
+    private ArrayList<Contact> contacts;
+    private ContactManager contactManager;
 
-    public MyContactRecyclerAdapter(Context con, ArrayList<Contact> data) {
-        this.con = con;
-        this.data = data;
-        manager = new ContactManager(con);
-        manager.ouvrir();
+    public MyContactRecyclerAdapter(Context context, ArrayList<Contact> contacts) {
+        this.context = context;
+        this.contacts = contacts;
+        this.contactManager = new ContactManager(context);
+        this.contactManager.ouvrir();
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inf = LayoutInflater.from(con);
-        View v = inf.inflate(R.layout.view_contact, parent, false);
-        return new MyViewHolder(v);
+        View view = LayoutInflater.from(context).inflate(R.layout.view_contact, parent, false);
+        return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Contact c = data.get(position);
-        holder.tvnom.setText(c.getNom());
-        holder.tvprenom.setText(c.getPseudo());
-        holder.tvnum.setText(c.getNum());
-        // Charger avatar
-        /*String avatarUrl = "https://avatars.dicebear.com/api/human/" + c.getNom() + ".png";
-        new LoadImageTask(holder.ivAvatar).execute(avatarUrl);*/
-
-        holder.ivcall.setOnClickListener(view -> {
-            if (con instanceof Affichage) {
-                ((Affichage) con).makePhoneCall(c.getNum());
-            }
-        });
+        Contact contact = contacts.get(position);
+        holder.bind(contact);
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return contacts.size();
+    }
+
+    public void updateContacts(ArrayList<Contact> newContacts) {
+        this.contacts = newContacts;
+        notifyDataSetChanged();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tvnom, tvnum, tvprenom;
-        ImageView ivcall, ivupdate, ivdelete;
+        private TextView tvName, tvNumber, tvPseudo;
+        private ImageView ivCall, ivUpdate, ivDelete, ivAvatar;
 
-        public MyViewHolder(@NonNull View v) {
-            super(v);
-            tvnom = v.findViewById(R.id.tvnom_contact);
-            tvprenom = v.findViewById(R.id.tvprenom_contact);
-            tvnum = v.findViewById(R.id.tvnum_contact);
-            ivcall = v.findViewById(R.id.imageviewcall_contact);
-            ivupdate = v.findViewById(R.id.imageviewupdate_contact);
-            ivdelete = v.findViewById(R.id.imageviewdelete_contact);
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvName = itemView.findViewById(R.id.tvnom_contact);
+            tvPseudo = itemView.findViewById(R.id.tvprenom_contact);
+            tvNumber = itemView.findViewById(R.id.tvnum_contact);
+            ivCall = itemView.findViewById(R.id.imageviewcall_contact);
+            ivUpdate = itemView.findViewById(R.id.imageviewupdate_contact);
+            ivDelete = itemView.findViewById(R.id.imageviewdelete_contact);
+            ivAvatar = itemView.findViewById(R.id.iv_avatar);
 
+            setupClickListeners();
+        }
 
-            ivdelete.setOnClickListener(view -> {
-                // Create an AlertDialog builder
-                AlertDialog.Builder builder = new AlertDialog.Builder(con);
-                builder.setTitle("Confirmation");
-                builder.setMessage("Are you sure you want to delete this contact?");
+        public void bind(Contact contact) {
+            tvName.setText(contact.getNom());
+            tvPseudo.setText(contact.getPseudo());
+            tvNumber.setText(contact.getNum());
 
-                // Set up the confirmation buttons
-                builder.setPositiveButton("Yes", (dialog, which) -> {
-                    // Proceed with the deletion if user confirms
-                    int position = getAdapterPosition();
-                    Contact contactToDelete = data.get(position);
-                    manager.supprimerContact(contactToDelete.getId()); // Delete from the database
-                    data.remove(position); // Remove the contact from the list
-                    notifyItemRemoved(position); // Notify the adapter
-                    notifyItemRangeChanged(position, data.size()); // Update the range
-                    Toast.makeText(con, "Contact deleted", Toast.LENGTH_SHORT).show();
-                });
+            loadAvatar(contact.getAvatarUrl());
+        }
 
-                builder.setNegativeButton("No", (dialog, which) -> {
-                    // Cancel the dialog if user declines
+        private void loadAvatar(String avatarUrl) {
+            if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                Picasso.get()
+                        .load(avatarUrl)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_default_avatar)
+                        .into(ivAvatar, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d("Avatar", "Chargement réussi: " + avatarUrl);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Log.e("Avatar", "Erreur de chargement: " + avatarUrl, e);
+                                // Tentative avec une URL de secours
+                                loadFallbackAvatar();
+                            }
+                        });
+            } else {
+                loadFallbackAvatar();
+            }
+        }
+
+        private void loadFallbackAvatar() {
+            try {
+                // Utilisation d'un service alternatif si DiceBear échoue
+                String fallbackUrl = "https://ui-avatars.com/api/" +
+                        "?name=" + URLEncoder.encode(tvName.getText().toString(), "UTF-8") +
+                        "&background=E91E63" +
+                        "&color=fff" +
+                        "&size=100";
+
+                Picasso.get()
+                        .load(fallbackUrl)
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_default_avatar)
+                        .into(ivAvatar);
+            } catch (UnsupportedEncodingException e) {
+                Log.e("Avatar", "Erreur d'encodage pour le fallback avatar", e);
+                ivAvatar.setImageResource(R.drawable.ic_default_avatar);
+            }
+        }
+
+        private void setupClickListeners() {
+            ivCall.setOnClickListener(v -> makePhoneCall());
+            ivUpdate.setOnClickListener(v -> showUpdateDialog());
+            ivDelete.setOnClickListener(v -> showDeleteConfirmation());
+        }
+
+        private void makePhoneCall() {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                String phoneNumber = contacts.get(position).getNum();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                context.startActivity(intent);
+            }
+        }
+
+        private void showUpdateDialog() {
+            int position = getAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) return;
+
+            Contact contact = contacts.get(position);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            View dialogView = LayoutInflater.from(context).inflate(R.layout.view_dialogue, null);
+
+            EditText etName = dialogView.findViewById(R.id.et_nom);
+            EditText etPseudo = dialogView.findViewById(R.id.et_pseudo);
+            EditText etNumber = dialogView.findViewById(R.id.et_num);
+            Button btnCancel = dialogView.findViewById(R.id.button);
+            Button btnSave = dialogView.findViewById(R.id.btn_save);
+
+            etName.setText(contact.getNom());
+            etPseudo.setText(contact.getPseudo());
+            etNumber.setText(contact.getNum());
+
+            builder.setView(dialogView);
+            AlertDialog dialog = builder.create();
+
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+            btnSave.setOnClickListener(v -> {
+                String newName = etName.getText().toString().trim();
+                String newPseudo = etPseudo.getText().toString().trim();
+                String newNumber = etNumber.getText().toString().trim();
+
+                if (validateInputs(newName, newPseudo, newNumber)) {
+                    updateContact(position, contact, newName, newPseudo, newNumber);
                     dialog.dismiss();
-                });
-
-                // Display the confirmation dialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                }
             });
 
+            dialog.show();
+        }
 
-            ivupdate.setOnClickListener(view -> {
-                int position = getAdapterPosition();
-                Contact contactToUpdate = data.get(position);
+        private boolean validateInputs(String name, String pseudo, String number) {
+            if (name.isEmpty() || pseudo.isEmpty() || number.isEmpty()) {
+                Toast.makeText(context, "Tous les champs sont obligatoires", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            return true;
+        }
 
-                // Créez un objet AlertDialog.Builder
-                AlertDialog.Builder builder = new AlertDialog.Builder(con);
-                LayoutInflater inflater = LayoutInflater.from(con);
-                View dialogView = inflater.inflate(R.layout.view_dialogue, null);
+        private void updateContact(int position, Contact contact, String newName, String newPseudo, String newNumber) {
+            contactManager.modifierContact(contact.getId(), newName, newPseudo, newNumber);
+            contact.setNom(newName);
+            contact.setPseudo(newPseudo);
+            contact.setNum(newNumber);
+            notifyItemChanged(position);
+            Toast.makeText(context, "Contact mis à jour", Toast.LENGTH_SHORT).show();
+        }
 
-                // Obtenez les références des EditTexts et boutons
-                EditText editName = dialogView.findViewById(R.id.et_nom);
-                EditText editPseudo = dialogView.findViewById(R.id.et_pseudo);
-                EditText editNumber = dialogView.findViewById(R.id.et_num);
-                Button btnCancel = dialogView.findViewById(R.id.button);
-                Button btnSave = dialogView.findViewById(R.id.btn_save);
+        private void showDeleteConfirmation() {
+            int position = getAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) return;
 
-                // Remplissez les EditTexts avec les informations du contact
-                editName.setText(contactToUpdate.getNom());
-                editPseudo.setText(contactToUpdate.getPseudo());
-                editNumber.setText(contactToUpdate.getNum());
+            new AlertDialog.Builder(context)
+                    .setTitle("Confirmation")
+                    .setMessage("Êtes-vous sûr de vouloir supprimer ce contact?")
+                    .setPositiveButton("Oui", (dialog, which) -> deleteContact(position))
+                    .setNegativeButton("Non", null)
+                    .show();
+        }
 
-                // Définissez la vue du dialogue
-                builder.setView(dialogView);
-                AlertDialog dialog = builder.create();
-
-                // Ajoutez des actions aux boutons
-                btnCancel.setOnClickListener(view1 -> dialog.dismiss());
-
-                btnSave.setOnClickListener(view1 -> {
-                    String newName = editName.getText().toString().trim();
-                    String newPseudo = editPseudo.getText().toString().trim();
-                    String newNumber = editNumber.getText().toString().trim();
-
-                    if (!newName.isEmpty() && !newPseudo.isEmpty() && !newNumber.isEmpty()) {
-                        // Mettez à jour le contact
-                        manager.modifierContact(contactToUpdate.getId(), newName, newPseudo, newNumber);
-                        contactToUpdate.setNom(newName);
-                        contactToUpdate.setPseudo(newPseudo);
-                        contactToUpdate.setNum(newNumber);
-                        notifyItemChanged(position);
-                        Toast.makeText(con, "Contact updated", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(con, "All fields are required", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                // Affichez le dialogue
-                dialog.show();
-            });
-
+        private void deleteContact(int position) {
+            Contact contact = contacts.get(position);
+            contactManager.supprimerContact(contact.getId());
+            contacts.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, contacts.size());
+            Toast.makeText(context, "Contact supprimé", Toast.LENGTH_SHORT).show();
         }
     }
 }
-
-
-
-
-
-
-// splash screen , icone de app, rember me shared preference, edit nkamlaha , affiche nzido shearch en temps reel mech kitaamel entree (search view ) , call bel permission
-
