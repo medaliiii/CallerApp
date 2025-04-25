@@ -26,12 +26,6 @@ Application mobile native Android (Java) pour gérer vos contacts avec validatio
   - POST_NOTIFICATIONS
   - CALL_PHONE
 
-## 🖼 Captures d'écran
-<div align="center">
-  <img src="screenshots/login_screen.png" width="200" alt="Écran de connexion">
-  <img src="screenshots/contact_list.png" width="200" alt="Liste contacts"> 
-  <img src="screenshots/add_contact.png" width="200" alt="Ajout contact">
-</div>
 
 ## 🚀 Installation
 1. Cloner le dépôt :
