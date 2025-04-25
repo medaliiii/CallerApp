@@ -21,13 +21,27 @@ Application mobile native Android (Java) pour gérer vos contacts avec validatio
 - **Librairies**:
   - Retrofit (REST client)
   - Picasso (image loading)
-- **Permissions**:
-  - READ_EXTERNAL_STORAGE
-  - POST_NOTIFICATIONS
-  - CALL_PHONE
+## 🔐 Permissions Android
+- **Réseau**:
+  - `INTERNET` (accès au web)
+- **Contacts**:
+  - `CALL_PHONE` (passer des appels)
+- **Stockage**:
+  - `READ_EXTERNAL_STORAGE` (accès galerie)
+  - `READ_MEDIA_IMAGES` (Android 13+)
+- **Notifications**:
+  - `POST_NOTIFICATIONS` (Android 13+)
 
 
 ## 🚀 Installation
 1. Cloner le dépôt :
 ```bash
-git clone https://github.com/votre-username/CallerApp.git
+git clone https://github.com/medaliiii/CallerApp
+
+2.Ouvrir avec Android Studio
+
+3.Configurer les variables d'API :
+
+Modifier API_KEY dans Ajout.java
+
+4.Lancer sur émulateur/device (Android 6.0+)
