@@ -38,10 +38,10 @@ Application mobile native Android (Java) pour gérer vos contacts avec validatio
 ```bash
 git clone https://github.com/medaliiii/CallerApp
 
-2.Ouvrir avec Android Studio
+Ouvrir avec Android Studio
 
-3.Configurer les variables d'API :
+Configurer :
 
-Modifier API_KEY dans Ajout.java
+Clé API NumVerify dans Ajout.java
 
-4.Lancer sur émulateur/device (Android 6.0+)
+Exécuter sur émulateur/device (Android 6.0+)
