@@ -21,6 +21,31 @@ Application mobile native Android (Java) pour gérer vos contacts avec validatio
 - **Librairies**:
   - Retrofit (REST client)
   - Picasso (image loading)
+
+ ## 🔍 RecyclerView Avancé
+L'application utilise un **RecyclerView** avec les fonctionnalités suivantes :
+
+✅ **ViewHolder personnalisé**  
+- Affichage des contacts avec :
+  - Nom et pseudo
+  - Numéro de téléphone
+  - Avatar personnalisé
+  - Boutons d'action (appel, modification, suppression)
+
+✅ **Filtrage en temps réel**  
+- Barre de recherche intégrée
+- Filtrage par : nom, pseudo ou numéro
+
+✅ **Gestions des clics**  
+- Appel téléphonique au clic
+- Modification/suppression via icônes
+- Sélection de photo depuis la galerie
+
+✅ **Chargement optimisé**  
+- Utilisation de Picasso pour :
+  - Chargement asynchrone des images
+  - Cache mémoire et disque
+  - Placeholder et erreur de chargement
 ## 🔐 Permissions Android
 - **Réseau**:
   - `INTERNET` (accès au web)
