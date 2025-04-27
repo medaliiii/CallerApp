@@ -1,9 +1,13 @@
 package com.example.callerapp;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Callback;
@@ -25,9 +31,11 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecyclerAdapter.MyViewHolder> {
+    private static final int GALLERY_REQUEST_CODE = 1001;
     private Context context;
     private ArrayList<Contact> contacts;
     private ContactManager contactManager;
+    private int currentContactPosition = -1;
 
     public MyContactRecyclerAdapter(Context context, ArrayList<Contact> contacts) {
         this.context = context;
@@ -59,9 +67,29 @@ public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecy
         notifyDataSetChanged();
     }
 
+    public void handleGalleryResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+            if (selectedImageUri != null && currentContactPosition != RecyclerView.NO_POSITION) {
+                Contact contact = contacts.get(currentContactPosition);
+                contact.setLocalPhotoUri(selectedImageUri.toString());
+                contactManager.updateContactPhoto(contact.getId(), selectedImageUri.toString());
+                notifyItemChanged(currentContactPosition);
+            }
+        }
+    }
+
+    public void openGalleryForCurrentContact() {
+        if (currentContactPosition != RecyclerView.NO_POSITION) {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            ((Activity) context).startActivityForResult(intent, GALLERY_REQUEST_CODE);
+        }
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView tvName, tvNumber, tvPseudo;
-        private ImageView ivCall, ivUpdate, ivDelete, ivAvatar;
+        private ImageView ivCall, ivUpdate, ivDelete, ivAvatar, ivChangePhoto;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +100,7 @@ public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecy
             ivUpdate = itemView.findViewById(R.id.imageviewupdate_contact);
             ivDelete = itemView.findViewById(R.id.imageviewdelete_contact);
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivChangePhoto = itemView.findViewById(R.id.iv_change_photo);
 
             setupClickListeners();
         }
@@ -80,8 +109,40 @@ public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecy
             tvName.setText(contact.getNom());
             tvPseudo.setText(contact.getPseudo());
             tvNumber.setText(contact.getNum());
-
             loadAvatar(contact.getAvatarUrl());
+
+            if (contact.getLocalPhotoUri() != null && !contact.getLocalPhotoUri().isEmpty()) {
+                Picasso.get()
+                        .load(Uri.parse(contact.getLocalPhotoUri()))
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_default_avatar)
+                        .into(ivChangePhoto);  // Charger dans iv_change_photo au lieu de iv_avatar
+            } else {
+                ivChangePhoto.setImageResource(R.drawable.ic_camera); // Icône caméra par défaut
+            }
+        }
+
+        private void setupClickListeners() {
+            ivCall.setOnClickListener(v -> makePhoneCall());
+            ivUpdate.setOnClickListener(v -> showUpdateDialog());
+            ivDelete.setOnClickListener(v -> showDeleteConfirmation());
+            ivChangePhoto.setOnClickListener(v -> {
+                currentContactPosition = getAdapterPosition();
+                if (currentContactPosition != RecyclerView.NO_POSITION) {
+                    checkGalleryPermission();
+                }
+            });
+        }
+
+        private void checkGalleryPermission() {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions((Activity) context,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        GALLERY_REQUEST_CODE);
+            } else {
+                openGalleryForCurrentContact();
+            }
         }
 
         private void loadAvatar(String avatarUrl) {
@@ -90,27 +151,14 @@ public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecy
                         .load(avatarUrl)
                         .placeholder(R.drawable.ic_default_avatar)
                         .error(R.drawable.ic_default_avatar)
-                        .into(ivAvatar, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d("Avatar", "Chargement réussi: " + avatarUrl);
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-                                Log.e("Avatar", "Erreur de chargement: " + avatarUrl, e);
-                                // Tentative avec une URL de secours
-                                loadFallbackAvatar();
-                            }
-                        });
+                        .into(ivAvatar);
             } else {
-                loadFallbackAvatar();
+                ivAvatar.setImageResource(R.drawable.ic_default_avatar);
             }
         }
 
         private void loadFallbackAvatar() {
             try {
-                // Utilisation d'un service alternatif si DiceBear échoue
                 String fallbackUrl = "https://ui-avatars.com/api/" +
                         "?name=" + URLEncoder.encode(tvName.getText().toString(), "UTF-8") +
                         "&background=E91E63" +
@@ -121,17 +169,11 @@ public class MyContactRecyclerAdapter extends RecyclerView.Adapter<MyContactRecy
                         .load(fallbackUrl)
                         .placeholder(R.drawable.ic_default_avatar)
                         .error(R.drawable.ic_default_avatar)
-                        .into(ivAvatar);
+                        .into(ivAvatar);  // Toujours charger dans iv_avatar
             } catch (UnsupportedEncodingException e) {
-                Log.e("Avatar", "Erreur d'encodage pour le fallback avatar", e);
+                Log.e("Avatar", "Erreur d'encodage", e);
                 ivAvatar.setImageResource(R.drawable.ic_default_avatar);
             }
-        }
-
-        private void setupClickListeners() {
-            ivCall.setOnClickListener(v -> makePhoneCall());
-            ivUpdate.setOnClickListener(v -> showUpdateDialog());
-            ivDelete.setOnClickListener(v -> showDeleteConfirmation());
         }
 
         private void makePhoneCall() {
