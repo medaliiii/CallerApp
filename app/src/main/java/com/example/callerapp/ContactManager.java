@@ -70,6 +70,14 @@ public class ContactManager {
 
         return db.update(ContactHelper.table_contact, values, ContactHelper.col_id + " = ?", new String[]{String.valueOf(id)});
     }
+    public int updateContactPhoto(int id, String photoUri) {
+        ContentValues values = new ContentValues();
+        values.put(ContactHelper.col_avatar, photoUri);
+        return db.update(ContactHelper.table_contact,
+                values,
+                ContactHelper.col_id + " = ?",
+                new String[]{String.valueOf(id)});
+    }
 
     public void fermer() {
         db.close();
