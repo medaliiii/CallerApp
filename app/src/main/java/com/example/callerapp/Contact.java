@@ -6,6 +6,7 @@
         private String pseudo;
         private String num;
         private String avatarUrl;
+        private String localPhotoUri;
 
         public Contact(int id, String nom, String pseudo, String num,String avatarUrl) {
             this.id = id;
@@ -14,6 +15,8 @@
             this.num = num;
             this.avatarUrl = avatarUrl;
         }
+        public String getLocalPhotoUri() { return localPhotoUri; }
+        public void setLocalPhotoUri(String uri) { this.localPhotoUri = uri; }
 
         public Contact(String nom, String pseudo, String num) {
             this.nom = nom;
