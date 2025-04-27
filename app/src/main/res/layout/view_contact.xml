@@ -4,6 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="160sp"
     android:padding="10dp">
+
+    <!-- Icône pour changer la photo -->
+    <ImageView
+        android:id="@+id/iv_change_photo"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_camera"
+        android:layout_marginStart="8dp"/>
+
     <ImageView
         android:id="@+id/iv_avatar"
         android:layout_width="48dp"
@@ -11,8 +20,6 @@
         android:layout_marginEnd="8dp"
         android:contentDescription="Avatar"
         android:src="@drawable/ic_default_avatar"/>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,7 +73,6 @@
                 android:layout_width="70dp"
                 android:layout_height="30dp"
                 app:srcCompat="@drawable/baseline_delete_24" />
-
 
         </LinearLayout>
 
