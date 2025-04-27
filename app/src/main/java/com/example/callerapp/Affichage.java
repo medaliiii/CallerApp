@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class Affichage extends AppCompatActivity {
+    private static final int GALLERY_REQUEST_CODE = 1001;
+    private static final int CALL_PHONE_REQUEST_CODE = 1;
 
     private RecyclerView rv;
     private MyContactRecyclerAdapter adapter;
@@ -36,16 +37,13 @@ public class Affichage extends AppCompatActivity {
         manager = new ContactManager(this);
         manager.ouvrir();
 
-        // Initialisation des listes
         originalContacts = manager.getAllContact();
         filteredContacts = new ArrayList<>(originalContacts);
 
-        // Configuration du RecyclerView
         adapter = new MyContactRecyclerAdapter(this, filteredContacts);
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(adapter);
 
-        // Configuration de la SearchView
         SearchView searchView = findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -79,16 +77,17 @@ public class Affichage extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    public void makePhoneCall(String phoneNumber) {
+   /* public void makePhoneCall(String phoneNumber) {
         phoneNumberToCall = phoneNumber;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CALL_PHONE}, 1);
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    CALL_PHONE_REQUEST_CODE);
         } else {
             startCall(phoneNumber);
         }
-    }
+    }*/
 
     private void startCall(String phoneNumber) {
         try {
@@ -101,20 +100,47 @@ public class Affichage extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (phoneNumberToCall != null) {
-                    startCall(phoneNumberToCall);
-                }
-            } else {
-                Toast.makeText(this,
-                        "Permission d'appel refusée",
-                        Toast.LENGTH_SHORT).show();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (adapter != null) {
+                adapter.handleGalleryResult(requestCode, resultCode, data);
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case CALL_PHONE_REQUEST_CODE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (phoneNumberToCall != null) {
+                        startCall(phoneNumberToCall);
+                    }
+                } else {
+                    Toast.makeText(this,
+                            "Permission d'appel refusée",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case GALLERY_REQUEST_CODE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (adapter != null) {
+                        adapter.openGalleryForCurrentContact();
+                    }
+                } else {
+                    Toast.makeText(this,
+                            "Permission galerie refusée",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
